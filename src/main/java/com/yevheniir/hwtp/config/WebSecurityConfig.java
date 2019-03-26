@@ -21,27 +21,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private HwtpService hwtpService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .antMatcher("/**")
-                .authorizeRequests()
-                .mvcMatchers("/", "/login**", "/shopping-cart/**", "/js/**", "/error**", "/admin/stuff", "/login/getUser").permitAll()
-                .anyRequest().authenticated()
-                .and().logout().logoutSuccessUrl("/").permitAll()
-                .and()
-                .csrf().disable();
-    }
-//
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
 //        http
 //                .antMatcher("/**")
 //                .authorizeRequests()
-//                .anyRequest().permitAll()
+//                .mvcMatchers("/", "/login**", "/shopping-cart/**", "/js/**", "/error**", "/admin/stuff", "/login/getUser").permitAll()
+//                .anyRequest().authenticated()
+//                .and().logout().logoutSuccessUrl("/").permitAll()
 //                .and()
 //                .csrf().disable();
 //    }
+//
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .antMatcher("/**")
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and()
+                .csrf().disable();
+    }
 
 
     @Bean
@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
             user.setLastVisit(LocalDateTime.now());
 
-            hwtpService.setCurrentUser(user);
+//            hwtpService.setCurrentUser(user);
 
             userDetailsRepo.save(user);
 

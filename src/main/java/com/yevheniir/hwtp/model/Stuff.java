@@ -1,8 +1,12 @@
 package com.yevheniir.hwtp.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "stuff")
@@ -33,9 +37,16 @@ public class Stuff {
     @NotNull
     private int price;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User user;
+//    @NotNull
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    private User user;
+
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+    @JsonIgnore
+    @ManyToMany(mappedBy = "stuffs")
+    private List<Order> ord = new ArrayList<>();
+
 
     @Override
     public String toString() {
@@ -48,17 +59,26 @@ public class Stuff {
                 ", lab=" + lab +
                 ", exercise=" + exercise +
                 ", price=" + price +
-                ", user=" + user +
+//                ", user=" + user +
                 '}';
     }
 
-    public User getUser() {
-        return user;
+//    public User getUser() {
+//        return user;
+//    }
+
+    public List<Order> getOrd() {
+        return ord;
     }
 
-    public void setUser(User userId) {
-        this.user = userId;
+    public void setOrd(List<Order> ord) {
+        this.ord = ord;
     }
+//
+//    public void setUser(User userId) {
+//        this.user = userId;
+//    }
+
 
     public Long getId() {
         return id;
