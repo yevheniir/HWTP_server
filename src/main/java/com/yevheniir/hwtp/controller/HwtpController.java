@@ -8,16 +8,15 @@ import com.yevheniir.hwtp.service.HwtpService;
 import com.yevheniir.hwtp.service.StorageService;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -70,18 +69,15 @@ public class HwtpController {
         hwtpService.deleteOrder(id);
     }
 
-    @RequestMapping(value = "/image-response-entity", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getImageAsResponseEntity() throws IOException {
+
+    @RequestMapping(value = "/image-response-entity/{path}", method = RequestMethod.GET)
+    public void getImageAsResponseEntity(HttpServletResponse response, @PathVariable String path) throws IOException {
         HttpHeaders headers = new HttpHeaders();
 
-        InputStream in = new FileInputStream(new File("src/main/resources/static/images/download1.jpeg"));
-//        InputStream in = HwtpController.class.getResourceAsStream("../../../resources/static/images/download1.jpeg");
-        byte[] media = new byte[in.available()]; //IOUtils.toByteArray(in);
-        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-
-        return new ResponseEntity<>(media, headers, HttpStatus.OK);
+        InputStream in = new FileInputStream(new File("src/main/resources/static/images/" + path));
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(in, response.getOutputStream());
     }
-
 
 //
 //    @GetMapping("login/getUser")
