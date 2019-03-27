@@ -10,6 +10,7 @@ import com.yevheniir.hwtp.repository.UserDetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class HwtpService {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private EmailService emailService;
 
 //    User currentUser;
 //
@@ -52,7 +56,9 @@ public class HwtpService {
         return orderRepository.findAll();
     }
 
-    public void deleteOrder(Long id) {
+    public void deleteOrder(Long id) throws MessagingException {
+        emailService.sendSimpleMessage("zheka.rachkovan@gmail.com", "Наначи говорит наааааааааа... 10 часов", orderRepository.getOne(id).getStuffs());
+
         orderRepository.deleteById(id);
     }
 

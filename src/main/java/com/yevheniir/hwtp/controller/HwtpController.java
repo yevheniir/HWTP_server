@@ -70,7 +70,7 @@ public class HwtpController {
     }
 
     @DeleteMapping("orders/{id}")
-    void deleteOrder(@PathVariable Long id) {
+    void deleteOrder(@PathVariable Long id) throws MessagingException {
         hwtpService.deleteOrder(id);
     }
 
@@ -84,10 +84,6 @@ public class HwtpController {
         StreamUtils.copy(in, response.getOutputStream());
     }
 
-    @GetMapping("send-message")
-    public void sendMessage() throws MessagingException {
-        emailService.sendSimpleMessage("zheka.rachkovan@gmail.com", "Hello");
-    }
 
     @DeleteMapping("stuff/{id}")
     public void deleteStuff(@PathVariable Long id) {
