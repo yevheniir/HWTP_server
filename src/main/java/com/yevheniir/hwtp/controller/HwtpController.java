@@ -49,39 +49,10 @@ public class HwtpController {
         return hwtpService.getStuff();
     }
 
-    @PostMapping("orders")
-    Order addOrder(@RequestBody Order order) {
-        return hwtpService.addOrder(order);
-    }
 
-    @PostMapping("admin/stuff")
+    @PostMapping("stuff")
     Stuff addStuff(@RequestBody Stuff stuff) {
         return hwtpService.addStuff(stuff);
-    }
-
-    @PostMapping("orders/screen")
-    void addScreen(@RequestParam("photo") MultipartFile file){
-        storageService.storeScreen(file);
-    }
-
-    @GetMapping("orders")
-    List<Order> getOrders() {
-        return hwtpService.getOrders();
-    }
-
-    @DeleteMapping("orders/{id}")
-    void deleteOrder(@PathVariable Long id) throws MessagingException {
-        hwtpService.deleteOrder(id);
-    }
-
-
-    @GetMapping(value = "/image-response-entity/{path}")
-    public void getImageAsResponseEntity(HttpServletResponse response, @PathVariable String path) throws IOException {
-        HttpHeaders headers = new HttpHeaders();
-
-        InputStream in = new FileInputStream(new File("src/main/resources/images/" + path));
-        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        StreamUtils.copy(in, response.getOutputStream());
     }
 
 
@@ -95,6 +66,45 @@ public class HwtpController {
         storageService.storeFile(file);
     }
 
+    @GetMapping("orders")
+    List<Order> getOrders() {
+        return hwtpService.getOrders();
+    }
+
+    @PostMapping("orders/screen")
+    void addScreen(@RequestParam("photo") MultipartFile file){
+        storageService.storeScreen(file);
+    }
+
+    @DeleteMapping("orders/{id}")
+    void deleteOrder(@PathVariable Long id) throws MessagingException {
+        hwtpService.deleteOrder(id);
+    }
+
+    @PostMapping("orders/{id}")
+    void commentOrder(@PathVariable Long id, @RequestBody String comment) throws MessagingException {
+        hwtpService.commentOrder(id, comment);
+    }
+
+    @DeleteMapping("orders/cancel/{id}")
+    void cancelOrder(@PathVariable Long id) throws MessagingException {
+        hwtpService.canceOlrder(id);
+    }
+
+    @PostMapping("orders")
+    Order addOrder(@RequestBody Order order) {
+        return hwtpService.addOrder(order);
+    }
+
+
+    @GetMapping(value = "/image-response-entity/{path}")
+    public void getImageAsResponseEntity(HttpServletResponse response, @PathVariable String path) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+
+        InputStream in = new FileInputStream(new File("src/main/resources/images/" + path));
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(in, response.getOutputStream());
+    }
 
 
 //

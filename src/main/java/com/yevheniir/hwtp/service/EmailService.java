@@ -19,13 +19,13 @@ public class EmailService {
     @Autowired
     public JavaMailSender emailSender;
 
-    public void sendSimpleMessage(String to, String text, List<Stuff> stuffs) throws MessagingException {
+    public void sendSimpleMessage(String to, String subject, String text, List<Stuff> stuffs) throws MessagingException {
 
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         helper.setTo(to);
-        helper.setSubject("Оплата прошла, заказ доставлен");
+        helper.setSubject(subject);
         helper.setText(text);
 
         stuffs.forEach((stuff -> {

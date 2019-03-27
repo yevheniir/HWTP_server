@@ -57,9 +57,20 @@ public class HwtpService {
     }
 
     public void deleteOrder(Long id) throws MessagingException {
-        emailService.sendSimpleMessage("zheka.rachkovan@gmail.com", "Наначи говорит наааааааааа... 10 часов", orderRepository.getOne(id).getStuffs());
-
+        emailService.sendSimpleMessage(orderRepository.getOne(id).getEmail(), "Оплата прошла, заказ доставлен",
+                "Наначи говорит наааааааааа... 10 часов", orderRepository.getOne(id).getStuffs());
         orderRepository.deleteById(id);
+    }
+
+    public void canceOlrder(Long id) throws MessagingException {
+        emailService.sendSimpleMessage(orderRepository.getOne(id).getEmail(), "Оплата не прошла, заказ анулирован",
+                "Наначи говорит пошол наааааааааа... 10 часов", new ArrayList<Stuff>());
+        orderRepository.deleteById(id);
+    }
+
+    public void commentOrder(Long id, String comment) throws MessagingException {
+        emailService.sendSimpleMessage(orderRepository.getOne(id).getEmail(), "Пришел комментарий к вашему заказу",
+                comment, new ArrayList<Stuff>());
     }
 
     public Order addOrder(Order order) {
