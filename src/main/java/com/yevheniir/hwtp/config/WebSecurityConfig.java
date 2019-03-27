@@ -26,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        http
 //                .antMatcher("/**")
 //                .authorizeRequests()
-//                .mvcMatchers("/", "/login**", "/shopping-cart/**", "/js/**", "/error**", "/admin/stuff", "/login/getUser").permitAll()
+//                .mvcMatchers("/login/getUser").permitAll()
 //                .anyRequest().authenticated()
 //                .and().logout().logoutSuccessUrl("/").permitAll()
 //                .and()

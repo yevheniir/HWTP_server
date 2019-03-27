@@ -40,8 +40,8 @@ public class HwtpApplication {
 		mailSender.setHost("smtp.gmail.com");
 		mailSender.setPort(587);
 
-		mailSender.setUsername("my.gmail@gmail.com");
-		mailSender.setPassword("password");
+		mailSender.setUsername("hwtp.service@gmail.com");
+		mailSender.setPassword("hwtp3333");
 
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");

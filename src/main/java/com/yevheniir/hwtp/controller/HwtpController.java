@@ -4,6 +4,7 @@ import com.yevheniir.hwtp.model.Order;
 import com.yevheniir.hwtp.model.Stuff;
 import com.yevheniir.hwtp.repository.OrderRepository;
 import com.yevheniir.hwtp.repository.UserDetailsRepo;
+import com.yevheniir.hwtp.service.EmailService;
 import com.yevheniir.hwtp.service.HwtpService;
 import com.yevheniir.hwtp.service.StorageService;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +41,9 @@ public class HwtpController {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("stuff")
     List<Stuff> getStuff() {
         return hwtpService.getStuff();
@@ -56,7 +61,7 @@ public class HwtpController {
 
     @PostMapping("orders/screen")
     void addScreen(@RequestParam("photo") MultipartFile file){
-        storageService.storeFile(file);
+        storageService.storeScreen(file);
     }
 
     @GetMapping("orders")
@@ -70,14 +75,31 @@ public class HwtpController {
     }
 
 
-    @RequestMapping(value = "/image-response-entity/{path}", method = RequestMethod.GET)
+    @GetMapping(value = "/image-response-entity/{path}")
     public void getImageAsResponseEntity(HttpServletResponse response, @PathVariable String path) throws IOException {
         HttpHeaders headers = new HttpHeaders();
 
-        InputStream in = new FileInputStream(new File("src/main/resources/static/images/" + path));
+        InputStream in = new FileInputStream(new File("src/main/resources/images/" + path));
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         StreamUtils.copy(in, response.getOutputStream());
     }
+
+    @GetMapping("send-message")
+    public void sendMessage() throws MessagingException {
+        emailService.sendSimpleMessage("zheka.rachkovan@gmail.com", "Hello");
+    }
+
+    @DeleteMapping("stuff/{id}")
+    public void deleteStuff(@PathVariable Long id) {
+        hwtpService.deleteStuff(id);
+    }
+
+    @PostMapping("stuff/file")
+    void addFile(@RequestParam("file") MultipartFile file){
+        storageService.storeFile(file);
+    }
+
+
 
 //
 //    @GetMapping("login/getUser")

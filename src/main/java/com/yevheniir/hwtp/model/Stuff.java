@@ -2,6 +2,8 @@ package com.yevheniir.hwtp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.beans.DefaultProperty;
+import lombok.Builder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -36,6 +38,12 @@ public class Stuff {
 
     @NotNull
     private int price;
+
+    @Column(name = "archive", nullable = false, columnDefinition = "boolean default false")
+    private boolean archive;
+
+    @NotNull
+    private String file;
 
 //    @NotNull
 //    @ManyToOne(fetch = FetchType.EAGER)
@@ -79,6 +87,22 @@ public class Stuff {
 //        this.user = userId;
 //    }
 
+
+    public boolean isArchive() {
+        return archive;
+    }
+
+    public void setArchive(boolean archive) {
+        this.archive = archive;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
 
     public Long getId() {
         return id;

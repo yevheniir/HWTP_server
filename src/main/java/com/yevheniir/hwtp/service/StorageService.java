@@ -4,6 +4,8 @@ import com.yevheniir.hwtp.config.FileStorageProperties;
 import com.yevheniir.hwtp.exception.FileStorageException;
 import com.yevheniir.hwtp.exception.MyFileNotFoundException;
 import com.yevheniir.hwtp.model.Order;
+import com.yevheniir.hwtp.model.Stuff;
+import com.yevheniir.hwtp.repository.HwtpRepository;
 import com.yevheniir.hwtp.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -25,7 +27,12 @@ public class StorageService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private HwtpRepository hwtpRepository;
+
     private final Path fileStorageLocation;
+
+    private final Path fileStorageLocation2;
 
     @Autowired
     public StorageService(FileStorageProperties fileStorageProperties) {
@@ -37,9 +44,18 @@ public class StorageService {
         } catch (Exception ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
+
+        this.fileStorageLocation2 = Paths.get(fileStorageProperties.getUploadDir2())
+                .toAbsolutePath().normalize();
+
+        try {
+            Files.createDirectories(this.fileStorageLocation2);
+        } catch (Exception ex) {
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
+        }
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeScreen(MultipartFile file) {
         Order order = orderRepository.findAll()
                 .stream()
                 .filter((or) -> {
@@ -88,6 +104,45 @@ public class StorageService {
             }
         } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
+        }
+    }
+
+    public String storeFile(MultipartFile file) {
+        Stuff stuff;
+        stuff = hwtpRepository.findAllUnarchived()
+                .stream()
+                .filter((or) -> {
+                    String[] x = or.getFile().split("\\\\");
+
+                    return x[x.length-1].equals(file.getOriginalFilename());
+                })
+                .findFirst().get();
+
+        // Normalize file name
+        String[] newFileName = file.getOriginalFilename().split("\\.");
+
+        newFileName[0] = newFileName[0].concat(String.valueOf(stuff.getId()));
+
+        String savedFile = newFileName[0].concat(".").concat(newFileName[1]);
+
+        stuff.setFile(savedFile);
+        hwtpRepository.save(stuff);
+
+        String fileName = StringUtils.cleanPath(savedFile);
+
+        try {
+            // Check if the file's name contains invalid characters
+            if(fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetLocation = this.fileStorageLocation2.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            return fileName;
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
 }
