@@ -79,6 +79,8 @@ public class HwtpService {
     }
 
     public void deleteStuff(Long id) {
-        this.hwtpRepository.deleteById(id);
+        Stuff stuff = this.hwtpRepository.getOne(id);
+        stuff.setArchive(true);
+        this.hwtpRepository.save(stuff);
     }
 }

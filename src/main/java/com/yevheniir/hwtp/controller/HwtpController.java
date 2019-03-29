@@ -64,7 +64,7 @@ public class HwtpController {
         throw new ForbiddenException();
     }
 
-    @DeleteMapping("stuff/{id}")
+    @PatchMapping("stuff/{id}")
     public void deleteStuff(@PathVariable Long id, @RequestHeader(value="Auth") String auth ) {
         if (authService.validToken(auth)) {
             hwtpService.deleteStuff(id);
