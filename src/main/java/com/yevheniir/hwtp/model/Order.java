@@ -3,9 +3,7 @@ package com.yevheniir.hwtp.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "ord")
@@ -23,7 +21,6 @@ public class Order {
     @NotNull
     private String screen;
 
-//    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, mappedBy="ord")
 
     @ManyToMany(cascade = {
             CascadeType.MERGE

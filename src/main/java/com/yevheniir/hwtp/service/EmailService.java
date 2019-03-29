@@ -2,22 +2,24 @@ package com.yevheniir.hwtp.service;
 
 import com.yevheniir.hwtp.model.Stuff;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
+import javax.mail.util.ByteArrayDataSource;
 import java.util.List;
 
 @Service
 public class EmailService {
 
     @Autowired
-    public JavaMailSender emailSender;
+    private JavaMailSender emailSender;
+
+    @Autowired
+    private StorageService storageService;
 
     public void sendSimpleMessage(String to, String subject, String text, List<Stuff> stuffs) throws MessagingException {
 
@@ -29,11 +31,10 @@ public class EmailService {
         helper.setText(text);
 
         stuffs.forEach((stuff -> {
-            FileSystemResource file
-                    = new FileSystemResource(new File("src/main/resources/files/" + stuff.getFile()));
+
+            DataSource file = new ByteArrayDataSource(storageService.getFile(stuff.getFile()), "text/plain");
             try {
                 helper.addAttachment(stuff.getFile(), file);
-
             } catch (MessagingException e) {
                 e.printStackTrace();
             }

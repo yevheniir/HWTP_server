@@ -2,8 +2,6 @@ package com.yevheniir.hwtp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javafx.beans.DefaultProperty;
-import lombok.Builder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -45,12 +43,6 @@ public class Stuff {
     @NotNull
     private String file;
 
-//    @NotNull
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    private User user;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn
     @JsonIgnore
     @ManyToMany(mappedBy = "stuffs")
     private List<Order> ord = new ArrayList<>();
@@ -67,13 +59,9 @@ public class Stuff {
                 ", lab=" + lab +
                 ", exercise=" + exercise +
                 ", price=" + price +
-//                ", user=" + user +
                 '}';
     }
 
-//    public User getUser() {
-//        return user;
-//    }
 
     public List<Order> getOrd() {
         return ord;
@@ -82,10 +70,6 @@ public class Stuff {
     public void setOrd(List<Order> ord) {
         this.ord = ord;
     }
-//
-//    public void setUser(User userId) {
-//        this.user = userId;
-//    }
 
 
     public boolean isArchive() {

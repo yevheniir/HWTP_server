@@ -1,25 +1,21 @@
 package com.yevheniir.hwtp.service;
 
-import com.yevheniir.hwtp.config.FileStorageProperties;
 import com.yevheniir.hwtp.exception.FileStorageException;
-import com.yevheniir.hwtp.exception.MyFileNotFoundException;
+import com.yevheniir.hwtp.model.File;
+import com.yevheniir.hwtp.model.Image;
 import com.yevheniir.hwtp.model.Order;
 import com.yevheniir.hwtp.model.Stuff;
+import com.yevheniir.hwtp.repository.FileRepository;
 import com.yevheniir.hwtp.repository.HwtpRepository;
+import com.yevheniir.hwtp.repository.ImageRepository;
 import com.yevheniir.hwtp.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 
 @Service
 public class StorageService {
@@ -30,30 +26,12 @@ public class StorageService {
     @Autowired
     private HwtpRepository hwtpRepository;
 
-    private final Path fileStorageLocation;
-
-    private final Path fileStorageLocation2;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
-    public StorageService(FileStorageProperties fileStorageProperties) {
-        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
-                .toAbsolutePath().normalize();
+    private FileRepository fileRepository;
 
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
-        }
-
-        this.fileStorageLocation2 = Paths.get(fileStorageProperties.getUploadDir2())
-                .toAbsolutePath().normalize();
-
-        try {
-            Files.createDirectories(this.fileStorageLocation2);
-        } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
-        }
-    }
 
     public String storeScreen(MultipartFile file) {
         Order order = orderRepository.findAll()
@@ -65,7 +43,6 @@ public class StorageService {
                 })
                 .findFirst().get();
 
-        // Normalize file name
         String[] newFileName = file.getOriginalFilename().split("\\.");
 
         newFileName[0] = newFileName[0].concat(String.valueOf(order.getId()));
@@ -78,14 +55,12 @@ public class StorageService {
         String fileName = StringUtils.cleanPath(savedFile);
 
         try {
-            // Check if the file's name contains invalid characters
             if(fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
-            // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Image screen = new Image(fileName, file.getBytes());
+            imageRepository.save(screen);
 
             return fileName;
         } catch (IOException ex) {
@@ -93,18 +68,14 @@ public class StorageService {
         }
     }
 
-    public Resource loadFileAsResource(String fileName) {
-        try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
-                return resource;
-            } else {
-                throw new MyFileNotFoundException("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new MyFileNotFoundException("File not found " + fileName, ex);
-        }
+    public byte[] getScreen(String path) {
+        Image img = imageRepository.findById(path);
+        return img.getImage();
+    }
+
+    public byte[] getFile(String path) {
+        File img = fileRepository.findById(path);
+        return img.getFile();
     }
 
     public String storeFile(MultipartFile file) {
@@ -118,7 +89,6 @@ public class StorageService {
                 })
                 .findFirst().get();
 
-        // Normalize file name
         String[] newFileName = file.getOriginalFilename().split("\\.");
 
         newFileName[0] = newFileName[0].concat(String.valueOf(stuff.getId()));
@@ -131,14 +101,12 @@ public class StorageService {
         String fileName = StringUtils.cleanPath(savedFile);
 
         try {
-            // Check if the file's name contains invalid characters
             if(fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
-            // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation2.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            File newFile = new File(fileName, file.getBytes());
+            fileRepository.save(newFile);
 
             return fileName;
         } catch (IOException ex) {

@@ -18,9 +18,6 @@ public class AuthService {
         String decodedString = new String(Base64.getDecoder().decode(parsedToken[0]));
         LocalDateTime tokenTime = LocalDateTime.parse(new String(Base64.getDecoder().decode(parsedToken[1])));
 
-        long x = ChronoUnit.MILLIS.between(tokenTime, LocalDateTime.now());
-        long x2 = 2;
-
         return decodedString.equals(secretKey) && tokenTime.isBefore(LocalDateTime.now()) && ChronoUnit.MILLIS.between(LocalDateTime.now(), tokenTime) < timeExpire;
     }
 
