@@ -128,7 +128,7 @@ public class HwtpController {
 
     @PostMapping("password")
     public List<String> validatePassword(@RequestBody String password) {
-        if (password.equals("password")) {
+        if (password.equals("vidrigan_mraz228")) {
             List<String> l = new ArrayList<>();
             l.add(this.authService.createToken());
             return l ;
